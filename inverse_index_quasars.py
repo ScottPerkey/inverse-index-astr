@@ -23,7 +23,6 @@ class inverse:
 			except (pd.errors.EmptyDataError, Exception) as e:
 				print(f'Skipping {file}; {str(e)}')
 				continue
-		# I lowkey think we dont even need this but lets just put it here for now: data_file_tup=(self.df_ZTF_quas,self.list_clean)
 
 	def create_indexed_csv(self):	
 
@@ -48,7 +47,6 @@ class inverse:
 				self.period_sorted_percsv.append(top4_power)
 				#self.periodogram_sep.append((freq,power))
 				# above is if for whateve reason we want to keep the frequency and power for plotting
-				# do this later
 			except Exception as e:
 				print(f'Error processing {self.all_files[i]}: {str(e)}' )
 		path_clean_g15=[strng for i,strng in enumerate(list_clean) if i not in indeces_to_remove]
@@ -71,7 +69,6 @@ class inverse:
 		flattened_pv=power_values.flatten()
 		singular_fpv=np.unique(flattened_pv)
 	
-		# example target value target_value=0.32
 		tolerance=1e-10
 		all_indeces_vals=[]
 		for val in singular_fpv:
@@ -87,13 +84,13 @@ class inverse:
 			full_binned_files.append([file_names[x] for x in l_list])	
 
 		full_bcsv = list(zip(*(singular_fpv,full_binned_files)))
-		print(full_bcsv)
+		# this is per rows binning
 
 		with open('binned_inverse_index.csv','w',newline='') as csvfile:
 			writer=csv.writer(csvfile)
 			writer.writerows(full_bcsv)
 	
 Inverse=inverse()
-#Inverse.read_in_csv()	
-#Inverse.create_indexed_csv()
+Inverse.read_in_csv()	
+Inverse.create_indexed_csv()
 Inverse.create_binned_csv()
