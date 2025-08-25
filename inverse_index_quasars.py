@@ -5,6 +5,19 @@ from astropy.timeseries import LombScargle
 import numpy as np
 class inverse:
 	def __init__(self):	
+		"""
+		Inverse index for ZTF quasar light curves.
+		
+		This class is made such that ZTF (Zwicky Transient Facility) quasar data is process and binned based off of Lomb-Scargle periodogram power values.
+
+		Attributes:
+			base_directory (str): Path to directory containing ZTF CSV files
+			df_ZTF_quas (list): List of loaded DataFrame objects
+			periodogram_sep (list): Storage for frequency and power arrays (unused)
+			period_sorted_percsv (list): Top 4 power values for each light curve
+			list_full (list): List of all successfully processed file paths
+				
+		"""
 		self.base_directory='/home/perkeys/inverse_index/1_5KZTFlc/'
 		self.df_ZTF_quas=[]	
 		self.periodogram_sep=[]
@@ -12,6 +25,14 @@ class inverse:
 		self.list_full=[]
 
 	def read_in_csv(self):
+		"""	
+		Read and validate all CSV files in the base directory.
+		Iterates through all CSV files in the specified directory, attempts to read each one as a pandas DataFrame, and stores valid files for further processing.
+		Skips empty files and files that cannot be parsed.
+		Raises:
+			pd.errors.EmptyDataError: If a CSV file is empty
+			Exception: For any other file reading errors
+		"""
 		ztf_csv=os.listdir(self.base_directory)
 		self.all_files=[self.base_directory+x for x in ztf_csv ] 
 		for file in self.all_files:
@@ -25,7 +46,14 @@ class inverse:
 				continue
 
 	def create_indexed_csv(self):	
-
+		"""
+		Create indexed CSV with Lomb-Scargle periodogram analysis results.
+		Processes each light curve to compute Lomb-Scargle periodograms and extracts the top 4 power values. Filters out light curves with insufficient data points (<15 measurements). Outputs a CSV file with discretized power values.
+		Output File: rounded_power_ZTF.csv
+        	File Format: First row contains filenames, subsequent rows contain top 4 power values
+		Raises:
+			Exception: If Lomb-Scargle computation fails for any file
+		"""
 		mask=[i for i,df in enumerate(self.df_ZTF_quas) if not df.empty]	
 		list_clean=[self.list_full[i] for i in mask]
 		indeces_to_remove=[]	
@@ -61,6 +89,17 @@ class inverse:
 			writer.writerows(rows)
 
 	def create_binned_csv(self):
+		"""
+		Create binned inverse index based on discretized power values.
+		Reads the output from create_indexed_csv() and creates an inverse index that groups files by their power values. Each bin contains all files that share the same discretized power value.
+
+		Output File: binned_inverse_index.csv
+		File Format: Each row contains a power value and list of files with that value
+
+		Note: It is not tolerance based, it is just matching indeces 
+
+
+		"""
 		all_data=pd.read_csv('rounded_power_ZTF.csv')
 		file_names=all_data.columns
 		power_values=all_data.values
@@ -94,3 +133,4 @@ Inverse=inverse()
 Inverse.read_in_csv()	
 Inverse.create_indexed_csv()
 Inverse.create_binned_csv()
+#TODO: like a million things, there is many ways this can be improved but I like it for what it is now in terms of a first go.
