@@ -142,7 +142,7 @@ class inverse:
 		# probably need to do a ranking read here or something, like ranks them inside, bt then we have do do a reverse search from there.
 
 
-	def search_pile_print(self):
+	def search_pile(self):
 		self.binned_read=pd.read_csv('binned_inverse_index_3d.csv',header=0)
 		# what we want to do now is that we read in the binned csv, and then search up a ztf file, and then print ( or csv place ) all of the others in said pile.
 		file_name=input('Input file name to search: ')
@@ -153,19 +153,15 @@ class inverse:
 				self.rndd_peaks.append( self.binned_read['rounded_power'][i] )
 				self.l_fle_name.append(files_str)
 		print(f'The closest ranked light curves associated with {file_name} are below:')
-		print('\n')
 		for i in range(len(self.rndd_peaks)):
 			print(f'Power spectrum peak of: {self.rndd_peaks[i]} with other light curve file names: {self.l_fle_name[i]}')
-			print('\n')
 
-	def search_pile_csv_output(self):
-		print('yep')
+
 
 Inverse=inverse()
 #Inverse.read_in_csv()	
 #Inverse.create_indexed_csv()
 #Inverse.create_binned_csv()
-Inverse.search_pile_print()
-Inverse.search_pile_csv_output()
+Inverse.search_pile()
 # 3.31.26 ranking is only one dimensional, we can maybe do a chi squared for similarness or maybe like how many times does each one show up within another range? like if they both exist in two different bins then they should be ranked closer to one another
 # 3.31.26 one thing we could do is give the person who is running this the option to print out or to put in csv, for now we only have the print option we will do the csv output option later
