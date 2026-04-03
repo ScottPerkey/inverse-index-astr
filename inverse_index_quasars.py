@@ -25,6 +25,8 @@ class inverse:
 		self.list_full=[]
 		self.rndd_peaks=[]
 		self.l_fle_name=[]
+		self.bin_csv='binned_inverse_index_3d.csv'
+		self.fl_rnked_outpt='file_matched_ranked_output.csv'
 
 
 
@@ -134,7 +136,7 @@ class inverse:
 		# this is per rows binning
 
 		header=['rounded_power','associated_filename_list']
-		with open('binned_inverse_index_3d.csv','w',newline='') as csvfile:
+		with open(self.bin_csv,'w',newline='') as csvfile:
 			writer=csv.writer(csvfile)
 			writer.writerow(header)
 			writer.writerows(full_bcsv)
@@ -142,10 +144,11 @@ class inverse:
 		# probably need to do a ranking read here or something, like ranks them inside, bt then we have do do a reverse search from there.
 
 
-	def search_pile_print(self):
-		self.binned_read=pd.read_csv('binned_inverse_index_3d.csv',header=0)
+	def search_pile_match(self,csv_output=False):
+		self.binned_read=pd.read_csv(self.bin_csv,header=0)
 		# what we want to do now is that we read in the binned csv, and then search up a ztf file, and then print ( or csv place ) all of the others in said pile.
 		file_name=input('Input file name to search: ')
+		print('\n')
 		# then search for any instance of that string
 		for i,files_str in enumerate(self.binned_read['associated_filename_list']):
 			actual_list=files_str.split('|')
@@ -156,16 +159,19 @@ class inverse:
 		print('\n')
 		for i in range(len(self.rndd_peaks)):
 			print(f'Power spectrum peak of: {self.rndd_peaks[i]} with other light curve file names: {self.l_fle_name[i]}')
-			print('\n')
+		if csv_output==True:
+			pile_csv={'rounded_peaks':self.rndd_peaks,
 
-	def search_pile_csv_output(self):
-		print('yep')
+				  'file_name':self.l_fle_name
+			}
+
+			pd.DataFrame(pile_csv).to_csv(self.fl_rnked_outpt,index=False)
+
 
 Inverse=inverse()
 #Inverse.read_in_csv()	
 #Inverse.create_indexed_csv()
 #Inverse.create_binned_csv()
-Inverse.search_pile_print()
-Inverse.search_pile_csv_output()
+Inverse.search_pile_match(True)
 # 3.31.26 ranking is only one dimensional, we can maybe do a chi squared for similarness or maybe like how many times does each one show up within another range? like if they both exist in two different bins then they should be ranked closer to one another
-# 3.31.26 one thing we could do is give the person who is running this the option to print out or to put in csv, for now we only have the print option we will do the csv output option later
+#4.2.26: how do we second dimensional searching, we'll see I think this is good for now
