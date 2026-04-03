@@ -26,7 +26,6 @@ class inverse:
 		self.rndd_peaks=[]
 		self.l_fle_name=[]
 		self.bin_csv='binned_inverse_index_3d.csv'
-		self.fl_rnked_outpt='file_matched_ranked_output.csv'
 
 
 
@@ -165,7 +164,7 @@ class inverse:
 				  'file_name':self.l_fle_name
 			}
 
-			pd.DataFrame(pile_csv).to_csv(self.fl_rnked_outpt,index=False)
+			pd.DataFrame(pile_csv).to_csv(f'{file_name}_matched.csv',index=False)
 
 
 Inverse=inverse()
